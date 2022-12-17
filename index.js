@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion} = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId} = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 require('dotenv').config();
@@ -54,12 +54,12 @@ async function run() {
         //     res.send(reviews);
         // })
 
-        // app.get('/reviews/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: ObjectId(id) };
-        //     const review = await reviewsCollection.findOne(query);
-        //     res.send(review);
-        // })
+        app.get('/updatePost/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const updateData = await postCollection.findOne(query);
+            res.send(updateData);
+        })
 
         // app.post('/comment', async (req, res) => {
         //     const review = req.body;
@@ -67,18 +67,26 @@ async function run() {
         //     res.send(result);
         // })
 
-        // app.patch('/comment/:id', async (req, res) => {
+        app.patch('/updatePost/:id', async (req, res) => {
+            const id = req.params.id;
+            const details = req.body.details;
+            const title = req.body.title;
+            const query = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    details: details,
+                    title: title
+                }
+            }
+            const result = await postCollection.updateOne(query, updateDoc);
+            res.send(result);
+
+        })
+
+        // app.delete('/reviews/:id', async (req, res) => {
         //     const id = req.params.id;
-        //     const review = req.body.review;
-        //     const rating = req.body.rating;
         //     const query = { _id: ObjectId(id) };
-        //     const updateDoc = {
-        //         $set: {
-        //             review: review,
-        //             rating: rating
-        //         }
-        //     }
-        //     const result = await reviewsCollection.updateOne(query, updateDoc);
+        //     const result = await reviewsCollection.deleteOne(query);
         //     res.send(result);
 
         // })
