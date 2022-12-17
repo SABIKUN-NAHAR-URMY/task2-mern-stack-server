@@ -16,8 +16,29 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         const postCollection = client.db('task2').collection('post');
-        // const postNewsCollection = client.db('task2').collection('postNews');
+        const usersCollection = client.db('task2').collection('users');
+        const commentCollection = client.db('task2').collection('comment');
        
+
+        app.get('/users', async (req, res) => {
+            const query = {};
+            const cursor = usersCollection.find(query);
+            const users = await cursor.toArray();
+            res.send(users);
+        })
+
+        app.get('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = {email};
+            const user = await usersCollection.findOne(query);
+            res.send(user);
+        })
+
+        app.post('/users', async (req, res) => {
+            const users = req.body;
+            const result = await usersCollection.insertOne(users);
+            res.send(result);
+        })
 
         app.get('/postData', async (req, res) => {
             const query = {};
@@ -32,28 +53,6 @@ async function run() {
             res.send(result);
         })
 
-        // app.get('/servicesAll/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: ObjectId(id) };
-        //     const service = await servicesCollection.findOne(query);
-        //     res.send(service);
-        // })
-
-
-        // app.get('/comment', async (req, res) => {
-
-        //     let query = {};
-
-        //     if (req.query.email) {
-        //         query = {
-        //             email: req.query.email
-        //         }
-        //     }
-        //     const cursor = reviewsCollection.find(query).sort(sortPattern);
-        //     const reviews = await cursor.toArray();
-        //     res.send(reviews);
-        // })
-
         app.get('/updatePost/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -61,11 +60,18 @@ async function run() {
             res.send(updateData);
         })
 
-        // app.post('/comment', async (req, res) => {
-        //     const review = req.body;
-        //     const result = await reviewsCollection.insertOne(review);
-        //     res.send(result);
-        // })
+        app.get('/comment', async (req, res) => {
+            const query = {};
+            const cursor = commentCollection.find(query);
+            const comment = await cursor.toArray();
+            res.send(comment);
+        })
+
+        app.post('/comment', async (req, res) => {
+            const review = req.body;
+            const result = await commentCollection.insertOne(review);
+            res.send(result);
+        })
 
         app.patch('/updatePost/:id', async (req, res) => {
             const id = req.params.id;
@@ -83,13 +89,13 @@ async function run() {
 
         })
 
-        // app.delete('/reviews/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: ObjectId(id) };
-        //     const result = await reviewsCollection.deleteOne(query);
-        //     res.send(result);
+        app.delete('/postData/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await postCollection.deleteOne(query);
+            res.send(result);
 
-        // })
+        })
 
         
 
